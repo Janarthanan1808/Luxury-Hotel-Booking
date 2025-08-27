@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+hotel_booking_env/
+
 # Distribution / packaging
 .Python
 build/
@@ -205,3 +207,4 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+src/linen-cubist-470308-m7-b76d822add44.json

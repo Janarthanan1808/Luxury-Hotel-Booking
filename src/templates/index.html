@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Hotel Booking</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-hotel"></i>
+                <span>Luxury Hotel</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#rooms">Rooms</a></li>
+                <li><a href="#booking">Book Now</a></li>
+                <!-- <li><a href="#contact">Contact</a></li> -->
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Welcome to Luxury Hotel</h1>
+            <p class="hero-subtitle">Experience comfort and elegance like never before</p>
+            <button class="cta-button" onclick="scrollToBooking()">Book Your Stay</button>
+        </div>
+        <div class="hero-overlay"></div>
+    </section>
+
+    <!-- Search Section -->
+    <section id="booking" class="search-section">
+        <div class="container">
+            <div class="search-card">
+                <h2>Find Your Perfect Stay</h2>
+                <form class="search-form" id="searchForm">
+                    <div class="form-group">
+                        <label for="checkIn">Check-in Date</label>
+                        <input type="date" id="checkIn" name="checkIn" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkOut">Check-out Date</label>
+                        <input type="date" id="checkOut" name="checkOut" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adults">Adults</label>
+                        <select id="adults" name="adults">
+                            <option value="1">1 Adult</option>
+                            <option value="2" selected>2 Adults</option>
+                            <option value="3">3 Adults</option>
+                            <option value="4">4 Adults</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="search-button">
+                        <i class="fas fa-search"></i>
+                        Search Rooms
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rooms Section -->
+    <section id="rooms" class="rooms-section">
+        <div class="container">
+            <h2 class="section-title">Available Rooms</h2>
+            <div class="rooms-grid" id="roomsGrid">
+                <!-- Rooms will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Booking Modal -->
+    <div class="modal" id="bookingModal">
+        <div class="modal-backdrop" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-calendar-check modal-icon"></i>
+                    <h2>Complete Your Booking</h2>
+                </div>
+                <button class="close-btn" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="booking-progress">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-icon"><i class="fas fa-info-circle"></i></div>
+                        <span>Details</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-icon"><i class="fas fa-user"></i></div>
+                        <span>Guest Info</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-icon"><i class="fas fa-credit-card"></i></div>
+                        <span>Payment</span>
+                    </div>
+                </div>
+
+                <form id="bookingForm">
+                    <!-- Step 1: Booking Details -->
+                    <div class="booking-step active" data-step="1">
+                        <div class="booking-details-card" id="bookingDetails">
+                            <!-- Booking details will be populated dynamically -->
+                        </div>
+                        
+                        <div class="extras-section">
+                            <h3><i class="fas fa-plus-circle"></i> Enhance Your Stay</h3>
+                            <div class="extras-grid">
+                                <div class="extra-item">
+                                    <input type="checkbox" id="breakfast" name="breakfast" class="extra-checkbox">
+                                    <label for="breakfast" class="extra-label">
+                                        <div class="extra-icon">
+                                            <i class="fas fa-coffee"></i>
+                                        </div>
+                                        <div class="extra-info">
+                                            <h4>Continental Breakfast</h4>
+                                            <p>Start your day right with our delicious breakfast buffet</p>
+                                            <span class="extra-price">+$25/night</span>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <div class="extra-item">
+                                    <input type="checkbox" id="spa" name="spa" class="extra-checkbox">
+                                    <label for="spa" class="extra-label">
+                                        <div class="extra-icon">
+                                            <i class="fas fa-spa"></i>
+                                        </div>
+                                        <div class="extra-info">
+                                            <h4>Spa Package</h4>
+                                            <p>Relax and rejuvenate with our premium spa services</p>
+                                            <span class="extra-price">+$75/stay</span>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <div class="extra-item">
+                                    <input type="checkbox" id="parking" name="parking" class="extra-checkbox">
+                                    <label for="parking" class="extra-label">
+                                        <div class="extra-icon">
+                                            <i class="fas fa-car"></i>
+                                        </div>
+                                        <div class="extra-info">
+                                            <h4>Valet Parking</h4>
+                                            <p>Convenient valet parking service</p>
+                                            <span class="extra-price">+$20/night</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-actions">
+                            <button type="button" class="next-step-btn" onclick="nextStep(2)">
+                                Continue <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Guest Information -->
+                    <div class="booking-step" data-step="2">
+                        <div class="guest-info-card">
+                            <h3><i class="fas fa-user-circle"></i> Guest Information</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="bookingCheckIn">Check-in Date</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-calendar-alt input-icon"></i>
+                                        <input type="date" id="bookingCheckIn" placeholder="Select check-in date" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="bookingCheckOut">Check-out Date</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-calendar-alt input-icon"></i>
+                                        <input type="date" id="bookingCheckOut" placeholder="Select check-out date" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="bookingAdults">Number of Guests</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-users input-icon"></i>
+                                        <select id="bookingAdults" required>
+                                            <option value="">Select guests</option>
+                                            <option value="1">1 Adult</option>
+                                            <option value="2">2 Adults</option>
+                                            <option value="3">3 Adults</option>
+                                            <option value="4">4 Adults</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="guestName">Full Name</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-user input-icon"></i>
+                                        <input type="text" id="guestName" placeholder="Enter your full name" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="guestEmail">Email Address</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-envelope input-icon"></i>
+                                        <input type="email" id="guestEmail" placeholder="Enter your email" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="guestPhone">Phone Number</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-phone input-icon"></i>
+                                        <input type="tel" id="guestPhone" placeholder="Enter your phone number" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group full-width">
+                                    <label for="specialRequests">Special Requests</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-comment input-icon"></i>
+                                        <textarea id="specialRequests" placeholder="Any special requirements or preferences?"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-actions">
+                            <button type="button" class="prev-step-btn" onclick="prevStep(1)">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button type="button" class="next-step-btn" onclick="nextStep(3)">
+                                Continue <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Payment & Summary -->
+                    <div class="booking-step" data-step="3">
+                        <div class="payment-section">
+                            <div class="price-summary-card" id="priceSummary">
+                                <!-- Price summary will be populated dynamically -->
+                            </div>
+                            
+                            <div class="payment-method">
+                                <h3><i class="fas fa-credit-card"></i> Payment Method</h3>
+                                <div class="payment-options">
+                                    <div class="payment-option">
+                                        <input type="radio" id="credit-card" name="payment" value="card" checked>
+                                        <label for="credit-card">
+                                            <i class="fab fa-cc-visa"></i>
+                                            <i class="fab fa-cc-mastercard"></i>
+                                            <span>Credit/Debit Card</span>
+                                        </label>
+                                    </div>
+                                    <div class="payment-option">
+                                        <input type="radio" id="paypal" name="payment" value="paypal">
+                                        <label for="paypal">
+                                            <i class="fab fa-paypal"></i>
+                                            <span>PayPal</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="terms-section">
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="terms" required>
+                                    <label for="terms">
+                                        I agree to the <a href="#" class="terms-link">Terms & Conditions</a> and <a href="#" class="terms-link">Privacy Policy</a>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-actions">
+                            <button type="button" class="prev-step-btn" onclick="prevStep(2)">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button type="submit" class="book-button">
+                                <div class="button-content">
+                                    <i class="fas fa-lock"></i>
+                                    <span>Secure Booking</span>
+                                </div>
+                                <div class="button-loader">
+                                    <div class="loader-spinner"></div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

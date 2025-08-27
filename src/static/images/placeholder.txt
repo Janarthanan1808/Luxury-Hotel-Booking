@@ -1,0 +1,7 @@
+This directory contains placeholder for room images.
+The actual images should be placed here:
+- standard-room.jpg
+- deluxe-room.jpg
+- suite-room.jpg
+
+For now, the application uses CSS gradients as fallback backgrounds.
