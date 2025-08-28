@@ -1,4 +1,4 @@
-/* Reset and Base Styles */
+
 * {
     margin: 0;
     padding: 0;
@@ -18,7 +18,7 @@ body {
     padding: 0 20px;
 }
 
-/* Header */
+
 .header {
     position: fixed;
     top: 0;
@@ -66,7 +66,7 @@ body {
     color: #c9b037;
 }
 
-/* Hero Section */
+
 .hero {
     height: 100vh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -123,7 +123,7 @@ body {
     box-shadow: 0 10px 25px rgba(201, 176, 55, 0.3);
 }
 
-/* Search Section */
+
 .search-section {
     padding: 4rem 0;
     background: #f8f9fa;
@@ -201,7 +201,7 @@ body {
     box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
 }
 
-/* Rooms Section */
+
 .rooms-section {
     padding: 5rem 0;
 }
@@ -273,7 +273,7 @@ body {
     backdrop-filter: blur(10px);
 }
 
-/* Room type specific gradient fallbacks */
+
 .room-image[style*="Standard"] {
     background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
 }
@@ -286,7 +286,7 @@ body {
     background: linear-gradient(135deg, #c9b037 0%, #f4d03f 100%) !important;
 }
 
-/* Room Content */
+
 .room-content {
     padding: 2rem;
 }
@@ -334,7 +334,7 @@ body {
     box-shadow: 0 5px 15px rgba(201, 176, 55, 0.3);
 }
 
-/* Enhanced Modal Styles */
+
 .modal {
     display: none;
     position: fixed;
@@ -431,7 +431,7 @@ body {
     padding: 2rem;
 }
 
-/* Booking Progress Steps */
+
 .booking-progress {
     display: flex;
     align-items: center;
@@ -518,7 +518,7 @@ body {
     animation: progressFill 0.5s ease forwards;
 }
 
-/* Booking Steps */
+
 .booking-step {
     display: none;
     animation: fadeInUp 0.4s ease;
@@ -549,7 +549,7 @@ body {
     background: linear-gradient(90deg, #c9b037, #f4d03f);
 }
 
-/* Extras Section */
+
 .extras-section {
     margin: 2rem 0;
 }
@@ -727,7 +727,7 @@ body {
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Payment Section */
+
 .payment-section {
     display: grid;
     gap: 2rem;
@@ -815,7 +815,7 @@ body {
     text-decoration: underline;
 }
 
-/* Step Actions */
+
 .step-actions {
     display: flex;
     justify-content: space-between;
@@ -862,7 +862,7 @@ body {
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
-/* Enhanced Book Button */
+
 .book-button {
     background: linear-gradient(45deg, #28a745, #20c997);
     color: white;
@@ -925,7 +925,7 @@ body {
     animation: spin 1s linear infinite;
 }
 
-/* Enhanced Price Display */
+
 .price-item {
     display: flex;
     justify-content: space-between;
@@ -956,7 +956,7 @@ body {
     font-size: 1.4rem;
 }
 
-/* Loading Spinner */
+
 .loading-spinner {
     position: fixed;
     top: 0;
@@ -980,7 +980,7 @@ body {
     animation: spin 1s linear infinite;
 }
 
-/* Disabled button state for unavailable rooms */
+
 .book-now-btn:disabled {
     background: #6c757d !important;
     cursor: not-allowed;
@@ -1033,7 +1033,7 @@ body {
     margin-top: 1rem;
 }
 
-/* Enhanced Notifications */
+
 .notification {
     position: fixed;
     top: 20px;
@@ -1544,7 +1544,7 @@ body {
     box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
 }
 
-/* Confirmation Modal Animations */
+
 @keyframes shimmer {
     0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
     50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
@@ -1565,7 +1565,7 @@ body {
     50% { opacity: 1; }
 }
 
-/* Mobile Responsive */
+
 @media (max-width: 768px) {
     .search-form {
         grid-template-columns: 1fr;
