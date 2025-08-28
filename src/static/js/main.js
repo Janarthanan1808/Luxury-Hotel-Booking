@@ -1,8 +1,8 @@
-// Global variables
+
 let currentBookingData = {};
 let roomsData = [];
 
-// Initialize the application
+
 document.addEventListener('DOMContentLoaded', function() {
     setMinDates();
     loadRooms();
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     monitorConnection();
 });
 
-// Set minimum dates for check-in and check-out
+
 function setMinDates() {
     const today = new Date().toISOString().split('T')[0];
     const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
@@ -21,12 +21,12 @@ function setMinDates() {
     document.getElementById('checkOut').value = tomorrow;
 }
 
-// Setup event listeners
+
 function setupEventListeners() {
-    // Search form submission
+    
     document.getElementById('searchForm').addEventListener('submit', handleSearch);
     
-    // Date change listeners
+   
     document.getElementById('checkIn').addEventListener('change', function() {
         const checkInDate = new Date(this.value);
         const nextDay = new Date(checkInDate.getTime() + 86400000);
@@ -37,16 +37,16 @@ function setupEventListeners() {
         }
     });
     
-    // Booking form submission
+    
     document.getElementById('bookingForm').addEventListener('submit', handleBooking);
     
-    // Breakfast checkbox change
+   
     document.getElementById('breakfast').addEventListener('change', updatePriceSummary);
     
-    // Add event listeners for booking form date changes
+    
     document.addEventListener('change', function(e) {
         if (e.target.id === 'bookingCheckIn' || e.target.id === 'bookingCheckOut' || e.target.id === 'bookingAdults') {
-            // Validate dates first
+           
             const checkIn = document.getElementById('bookingCheckIn').value;
             const checkOut = document.getElementById('bookingCheckOut').value;
             
@@ -55,14 +55,14 @@ function setupEventListeners() {
                     showNotification('Check-out date must be after check-in date', 'error');
                     return;
                 }
-                // Update pricing when booking dates change
+                
                 updatePriceSummary();
             }
         }
     });
 }
 
-// Load rooms data
+
 async function loadRooms() {
     try {
         showLoading(true);
@@ -77,7 +77,7 @@ async function loadRooms() {
     }
 }
 
-// Display rooms in the grid
+
 function displayRooms(rooms, pricing = null, availability = null) {
     const roomsGrid = document.getElementById('roomsGrid');
     roomsGrid.innerHTML = '';
@@ -88,7 +88,6 @@ function displayRooms(rooms, pricing = null, availability = null) {
     });
 }
 
-// Create individual room card
 function createRoomCard(room, pricing = null, availability = null, index = 0) {
     const roomCard = document.createElement('div');
     roomCard.className = 'room-card';
@@ -97,14 +96,14 @@ function createRoomCard(room, pricing = null, availability = null, index = 0) {
     const isAvailable = availability ? availability[room.Room_Type] > 0 : true;
     const currentPrice = pricing ? calculateRoomPrice(room.Room_Type, pricing) : room.Base_Price;
     
-    // Use a placeholder image or gradient if image is not available
+    
     const roomImage = room.Image_URL ? `/static/images/${room.Image_URL}` : '';
     let backgroundStyle;
     
     if (roomImage) {
         backgroundStyle = `background-image: url('${roomImage}');`;
     } else {
-        // Apply room-type specific gradients
+       
         switch(room.Room_Type.toLowerCase()) {
             case 'standard':
                 backgroundStyle = 'background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);';
@@ -149,7 +148,7 @@ function createRoomCard(room, pricing = null, availability = null, index = 0) {
     return roomCard;
 }
 
-// Handle search form submission
+
 async function handleSearch(e) {
     e.preventDefault();
     
@@ -160,7 +159,7 @@ async function handleSearch(e) {
         adults: formData.get('adults')
     };
     
-    // Validate dates
+   
     if (new Date(searchData.check_in) >= new Date(searchData.check_out)) {
         showNotification('Check-out date must be after check-in date', 'error');
         return;
@@ -169,7 +168,6 @@ async function handleSearch(e) {
     try {
         showLoading(true);
         
-        // Get pricing and availability
         const [pricingResponse, availabilityResponse] = await Promise.all([
             fetch('/api/pricing', {
                 method: 'POST',
@@ -183,7 +181,6 @@ async function handleSearch(e) {
             })
         ]);
         
-        // Check if responses are ok
         if (!pricingResponse.ok || !availabilityResponse.ok) {
             throw new Error('Failed to fetch pricing or availability data');
         }
@@ -191,7 +188,7 @@ async function handleSearch(e) {
         const pricing = await pricingResponse.json();
         const availability = await availabilityResponse.json();
         
-        // Check for error responses
+        
         if (pricing.error) {
             throw new Error(pricing.error);
         }
@@ -199,13 +196,12 @@ async function handleSearch(e) {
             throw new Error(availability.error);
         }
         
-        // Update global search data
         currentBookingData = { ...searchData, pricing, availability };
         
-        // Display updated rooms
+        
         displayRooms(roomsData, pricing, availability);
         
-        // Scroll to rooms section
+      
         document.getElementById('rooms').scrollIntoView({ behavior: 'smooth' });
         
         showNotification('Search completed successfully!', 'success');
@@ -213,7 +209,7 @@ async function handleSearch(e) {
     } catch (error) {
         console.error('Search error:', error);
         
-        // Show detailed error message
+        
         let errorMessage = 'An unexpected error occurred while searching for rooms.';
         
         if (error.message.includes('Failed to fetch')) {
@@ -226,7 +222,7 @@ async function handleSearch(e) {
         
         showNotification(errorMessage, 'error');
         
-        // Also display error in the results area
+        
         const roomsGrid = document.getElementById('roomsGrid');
         if (roomsGrid) {
             roomsGrid.innerHTML = `
@@ -244,14 +240,14 @@ async function handleSearch(e) {
     }
 }
 
-// Calculate room price based on search criteria
+
 function calculateRoomPrice(roomType, pricing) {
     if (!pricing || pricing.length === 0) return 0;
     
     const roomPricing = pricing.filter(p => p.Room_Type === roomType);
     if (roomPricing.length === 0) return 0;
     
-    // Calculate average price for the stay period
+    
     const totalPrice = roomPricing.reduce((sum, day) => {
         const adults = parseInt(currentBookingData.adults) || 1;
         let dayPrice = adults === 1 ? day.Single_Rate : day.Double_Rate;
@@ -266,11 +262,11 @@ function calculateRoomPrice(roomType, pricing) {
     return Math.round(totalPrice / roomPricing.length);
 }
 
-// Open booking modal
+
 async function openBookingModal(roomType, basePrice) {
     const modal = document.getElementById('bookingModal');
     
-    // Populate booking details
+    
     const checkIn = document.getElementById('checkIn').value;
     const checkOut = document.getElementById('checkOut').value;
     const adults = document.getElementById('adults').value;
@@ -280,10 +276,9 @@ async function openBookingModal(roomType, basePrice) {
         return;
     }
     
-    // Calculate nights
     const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
     
-    // Update global booking data
+
     currentBookingData = {
         ...currentBookingData,
         room_type: roomType,
@@ -294,18 +289,18 @@ async function openBookingModal(roomType, basePrice) {
         adults: adults
     };
     
-    // Populate the booking form fields with search data
+    
     document.getElementById('bookingCheckIn').value = checkIn;
     document.getElementById('bookingCheckOut').value = checkOut;
     document.getElementById('bookingAdults').value = adults;
     
-    // Set minimum dates for booking form
+
     const today = new Date().toISOString().split('T')[0];
     const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
     document.getElementById('bookingCheckIn').min = today;
     document.getElementById('bookingCheckOut').min = tomorrow;
     
-    // Populate booking details section
+   
     const bookingDetails = document.getElementById('bookingDetails');
     bookingDetails.innerHTML = `
         <h3>Booking Summary</h3>
@@ -318,20 +313,18 @@ async function openBookingModal(roomType, basePrice) {
         </div>
     `;
     
-    // Calculate and display initial price
     await updatePriceSummary();
     
-    // Show modal with animation
     modal.style.display = 'block';
     setTimeout(() => modal.classList.add('show'), 10);
 }
 
-// Update price summary
+
 async function updatePriceSummary() {
     try {
         const breakfast = document.getElementById('breakfast').checked;
         
-        // Use booking form values if available, otherwise fall back to search form values
+        
         const checkIn = document.getElementById('bookingCheckIn').value || 
                        currentBookingData.check_in || 
                        document.getElementById('checkIn').value;
@@ -383,11 +376,11 @@ async function updatePriceSummary() {
     }
 }
 
-// Handle booking form submission
+
 async function handleBooking(e) {
     e.preventDefault();
     
-    // Get the submit button and add loading state
+    
     const submitButton = document.querySelector('.book-button');
     const originalContent = submitButton.innerHTML;
     
@@ -411,7 +404,6 @@ async function handleBooking(e) {
         breakfast: document.getElementById('breakfast').checked
     };
     
-    // Validate required fields
     if (!bookingData.guest_name || !bookingData.email || !bookingData.phone) {
         showNotification('Please fill in all required fields', 'error');
         submitButton.innerHTML = originalContent;
@@ -419,7 +411,7 @@ async function handleBooking(e) {
         return;
     }
     
-    // Validate email format
+ 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(bookingData.email)) {
         showNotification('Please enter a valid email address', 'error');
@@ -441,14 +433,14 @@ async function handleBooking(e) {
             showNotification(`Booking confirmed! Your booking ID is: ${result.booking_id}`, 'success');
             closeModal();
             
-            // Reset form
+         
             document.getElementById('searchForm').reset();
             setMinDates();
             
-            // Refresh rooms display
+           
             displayRooms(roomsData);
             
-            // Show confirmation details
+           
             showBookingConfirmation(result.booking_id, bookingData);
         } else {
             throw new Error(result.message || 'Booking failed');
@@ -457,7 +449,6 @@ async function handleBooking(e) {
     } catch (error) {
         console.error('Booking error:', error);
         
-        // Show detailed error message
         let errorMessage = 'An unexpected error occurred while processing your booking.';
         
         if (error.message.includes('Failed to fetch')) {
@@ -478,9 +469,9 @@ async function handleBooking(e) {
     }
 }
 
-// Show booking confirmation
+
 function showBookingConfirmation(bookingId, bookingData) {
-    // Create the confirmation modal HTML
+   
     const confirmationHTML = `
         <div class="confirmation-modal" id="confirmationModal">
             <div class="confirmation-backdrop" onclick="closeConfirmation()"></div>
@@ -574,25 +565,24 @@ function showBookingConfirmation(bookingId, bookingData) {
         </div>
     `;
     
-    // Remove any existing confirmation modal
     const existingModal = document.getElementById('confirmationModal');
     if (existingModal) {
         existingModal.remove();
     }
     
-    // Add the modal to the page
+   
     document.body.insertAdjacentHTML('beforeend', confirmationHTML);
     
-    // Show the modal with animation
+   
     setTimeout(() => {
         document.getElementById('confirmationModal').classList.add('show');
     }, 100);
     
-    // Auto-scroll to top when modal opens
+   
     document.body.style.overflow = 'hidden';
 }
 
-// Close booking confirmation
+
 function closeConfirmation() {
     const confirmation = document.getElementById('confirmationModal');
     if (confirmation) {
@@ -604,16 +594,16 @@ function closeConfirmation() {
     }
 }
 
-// Print confirmation function
+
 function printConfirmation() {
-    // Create a printable version of the confirmation
+    
     const confirmationContent = document.querySelector('.confirmation-content').cloneNode(true);
     
-    // Remove the action buttons from print version
+   
     const actions = confirmationContent.querySelector('.confirmation-actions');
     if (actions) actions.remove();
     
-    // Create print window
+  
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
         <html>
@@ -693,28 +683,28 @@ function printConfirmation() {
     }, 250);
 }
 
-// Close booking modal
+
 function closeModal() {
     const modal = document.getElementById('bookingModal');
     modal.style.display = 'none';
     modal.classList.remove('show');
     
-    // Reset modal to first step
+   
     resetModalToFirstStep();
     
-    // Reset form
+    
     document.getElementById('bookingForm').reset();
 }
 
-// Modal step navigation functions
+
 function nextStep(stepNumber) {
-    // Validate current step before proceeding
+   
     const currentStep = document.querySelector('.booking-step.active').getAttribute('data-step');
     
     if (currentStep === '1') {
-        // No validation needed for step 1, just proceed
+      
     } else if (currentStep === '2') {
-        // Validate booking dates and guest information
+      
         const bookingCheckIn = document.getElementById('bookingCheckIn').value;
         const bookingCheckOut = document.getElementById('bookingCheckOut').value;
         const bookingAdults = document.getElementById('bookingAdults').value;
@@ -732,52 +722,49 @@ function nextStep(stepNumber) {
             return;
         }
         
-        // Validate dates
+      
         if (new Date(bookingCheckIn) >= new Date(bookingCheckOut)) {
             showNotification('Check-out date must be after check-in date', 'error');
             return;
         }
         
-        // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(guestEmail)) {
             showNotification('Please enter a valid email address', 'error');
             return;
         }
         
-        // Update booking data with form values
+        
         currentBookingData.check_in = bookingCheckIn;
         currentBookingData.check_out = bookingCheckOut;
         currentBookingData.adults = bookingAdults;
     }
     
-    // Hide current step
+   
     const currentStepElement = document.querySelector('.booking-step.active');
     currentStepElement.classList.remove('active');
     
-    // Show next step
+    
     const nextStepElement = document.querySelector(`.booking-step[data-step="${stepNumber}"]`);
     nextStepElement.classList.add('active');
     
-    // Update progress indicators
     updateProgressIndicators(stepNumber);
     
-    // If moving to step 3, update the final price summary
+    
     if (stepNumber === 3) {
         updatePriceSummary();
     }
 }
 
 function prevStep(stepNumber) {
-    // Hide current step
+    
     const currentStepElement = document.querySelector('.booking-step.active');
     currentStepElement.classList.remove('active');
     
-    // Show previous step
     const prevStepElement = document.querySelector(`.booking-step[data-step="${stepNumber}"]`);
     prevStepElement.classList.add('active');
     
-    // Update progress indicators
+    
     updateProgressIndicators(stepNumber);
 }
 
@@ -794,18 +781,17 @@ function updateProgressIndicators(activeStep) {
 }
 
 function resetModalToFirstStep() {
-    // Hide all steps
+    
     const allSteps = document.querySelectorAll('.booking-step');
     allSteps.forEach(step => step.classList.remove('active'));
     
-    // Show first step
+   
     const firstStep = document.querySelector('.booking-step[data-step="1"]');
     firstStep.classList.add('active');
     
-    // Reset progress indicators
     updateProgressIndicators(1);
     
-    // Clear booking form fields
+    
     document.getElementById('bookingCheckIn').value = '';
     document.getElementById('bookingCheckOut').value = '';
     document.getElementById('bookingAdults').value = '';
@@ -816,13 +802,13 @@ function resetModalToFirstStep() {
     document.getElementById('breakfast').checked = false;
 }
 
-// Enhanced form validation
+
 function validateBookingForm() {
     const form = document.getElementById('bookingModal');
     let isValid = true;
     const errors = [];
     
-    // Clear previous errors
+ 
     document.querySelectorAll('.form-group.error').forEach(group => {
         group.classList.remove('error');
     });
@@ -830,7 +816,7 @@ function validateBookingForm() {
         error.remove();
     });
     
-    // Validate required fields
+  
     const requiredFields = {
         'firstName': 'First Name',
         'lastName': 'Last Name',
@@ -850,7 +836,7 @@ function validateBookingForm() {
         }
     }
     
-    // Validate email format
+   
     const emailField = document.getElementById('email');
     if (emailField && emailField.value) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -861,7 +847,6 @@ function validateBookingForm() {
         }
     }
     
-    // Validate phone format
     const phoneField = document.getElementById('phone');
     if (phoneField && phoneField.value) {
         const phoneRegex = /^[\+]?[\d\s\-\(\)]{10,}$/;
@@ -872,7 +857,7 @@ function validateBookingForm() {
         }
     }
     
-    // Validate dates
+   
     const checkInField = document.getElementById('checkIn');
     const checkOutField = document.getElementById('checkOut');
     
@@ -895,7 +880,7 @@ function validateBookingForm() {
         }
     }
     
-    // Validate number of guests
+   
     const guestsField = document.getElementById('guests');
     if (guestsField && guestsField.value) {
         const guests = parseInt(guestsField.value);
@@ -921,7 +906,7 @@ function markFieldAsError(field, message) {
     }
 }
 
-// Add real-time validation
+
 function setupRealTimeValidation() {
     const form = document.getElementById('bookingModal');
     if (!form) return;
@@ -929,7 +914,7 @@ function setupRealTimeValidation() {
     const fields = form.querySelectorAll('input, select');
     fields.forEach(field => {
         field.addEventListener('blur', () => {
-            // Clear previous error for this field
+           
             const formGroup = field.closest('.form-group');
             if (formGroup && formGroup.classList.contains('error')) {
                 formGroup.classList.remove('error');
@@ -938,7 +923,7 @@ function setupRealTimeValidation() {
                     errorElement.remove();
                 }
                 
-                // Re-validate just this field
+               
                 validateSingleField(field);
             }
         });
@@ -1005,7 +990,7 @@ function validateSingleField(field) {
     }
 }
 
-// Initialize validation on modal open
+
 document.addEventListener('DOMContentLoaded', function() {
     // Setup real-time validation when modal is opened
     const observer = new MutationObserver(function(mutations) {
@@ -1026,7 +1011,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Network retry utility
+
 async function retryRequest(requestFn, maxRetries = 3, delay = 1000) {
     let lastError;
     
@@ -1037,7 +1022,6 @@ async function retryRequest(requestFn, maxRetries = 3, delay = 1000) {
         } catch (error) {
             lastError = error;
             
-            // Don't retry for certain types of errors
             if (error.message.includes('validation') || 
                 error.message.includes('400') ||
                 error.message.includes('401') ||
@@ -1056,7 +1040,7 @@ async function retryRequest(requestFn, maxRetries = 3, delay = 1000) {
     throw lastError;
 }
 
-// Enhanced search with retry
+
 async function searchWithRetry() {
     try {
         showLoading(true);
@@ -1068,7 +1052,7 @@ async function searchWithRetry() {
                 adults: document.getElementById('guestCount').value || 1
             };
             
-            // Validate dates first
+           
             if (!searchData.check_in || !searchData.check_out) {
                 throw new Error('Please select both check-in and check-out dates');
             }
@@ -1086,7 +1070,7 @@ async function searchWithRetry() {
                 throw new Error('Check-out date must be after check-in date');
             }
             
-            // Get pricing and availability with error handling
+            
             const [pricingResponse, availabilityResponse] = await Promise.all([
                 fetch('/api/pricing', {
                     method: 'POST',
@@ -1100,7 +1084,7 @@ async function searchWithRetry() {
                 })
             ]);
             
-            // Check if responses are ok
+           
             if (!pricingResponse.ok) {
                 throw new Error(`Failed to fetch pricing data: ${pricingResponse.status}`);
             }
@@ -1111,7 +1095,7 @@ async function searchWithRetry() {
             const pricing = await pricingResponse.json();
             const availability = await availabilityResponse.json();
             
-            // Check for error responses
+           
             if (pricing.error) {
                 throw new Error(pricing.error);
             }
@@ -1122,14 +1106,14 @@ async function searchWithRetry() {
             return { pricing, availability };
         });
         
-        // Display rooms with the fetched data
+        
         displayRooms(roomsData, result.pricing, result.availability);
         showNotification('Search completed successfully!', 'success');
         
     } catch (error) {
         console.error('Search error:', error);
         
-        // Show detailed error message
+        
         let errorMessage = 'An unexpected error occurred while searching for rooms.';
         
         if (error.message.includes('Failed to fetch')) {
@@ -1142,7 +1126,7 @@ async function searchWithRetry() {
         
         showNotification(errorMessage, 'error');
         
-        // Also display error in the results area
+        
         const roomsGrid = document.getElementById('roomsGrid');
         if (roomsGrid) {
             roomsGrid.innerHTML = `
@@ -1160,7 +1144,6 @@ async function searchWithRetry() {
     }
 }
 
-// Connection status monitoring
 function monitorConnection() {
     let isOnline = navigator.onLine;
     
@@ -1178,13 +1161,13 @@ function monitorConnection() {
     window.addEventListener('online', updateConnectionStatus);
     window.addEventListener('offline', updateConnectionStatus);
     
-    // Initial check
+   
     if (!isOnline) {
         showNotification('You appear to be offline. Some features may not work properly.', 'warning', 0);
     }
 }
 
-// Utility functions
+
 function formatDate(dateString) {
     const options = { 
         weekday: 'short', 
@@ -1201,7 +1184,7 @@ function showLoading(show) {
 }
 
 function showNotification(message, type = 'info', duration = 5000) {
-    // Remove existing notifications
+   
     const existingNotifications = document.querySelectorAll('.notification');
     existingNotifications.forEach(n => n.remove());
     
@@ -1219,7 +1202,7 @@ function showNotification(message, type = 'info', duration = 5000) {
     
     document.body.appendChild(notification);
     
-    // Auto remove after specified duration
+   
     setTimeout(() => {
         if (notification.parentElement) {
             notification.remove();
@@ -1233,7 +1216,7 @@ function scrollToBooking() {
     });
 }
 
-// Smooth scrolling for navigation links
+
 document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.nav-menu a[href^="#"]');
     navLinks.forEach(link => {
@@ -1248,18 +1231,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Handle window resize
+
 window.addEventListener('resize', function() {
-    // Adjust modal position if open
+   
     const modal = document.getElementById('bookingModal');
     if (modal.style.display === 'block') {
-        // Recalculate modal position
+       
         const modalContent = modal.querySelector('.modal-content');
         modalContent.style.marginTop = Math.max(window.innerHeight * 0.05, 20) + 'px';
     }
 });
 
-// Add CSS for notifications and confirmations
+
 const additionalCSS = `
 .notification {
     position: fixed;
