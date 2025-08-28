@@ -8,7 +8,7 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-# Google Sheets setup
+
 try:
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
     creds = ServiceAccountCredentials.from_json_keyfile_name(r'src\linen-cubist-470308-m7-b76d822add44.json', scope)
@@ -31,7 +31,7 @@ def index():
 def get_rooms():
     try:
         if sheet is None:
-            # Return mock data if Google Sheets is not available
+            
             return jsonify([
                 {
                     "Room_Type": "Standard",
@@ -94,7 +94,7 @@ def get_pricing():
         check_out = data.get('check_out')
         
         if sheet is None:
-            # Return mock pricing data if Google Sheets is not available
+            
             check_in_date = datetime.strptime(check_in, '%Y-%m-%d')
             check_out_date = datetime.strptime(check_out, '%Y-%m-%d')
             
@@ -118,19 +118,19 @@ def get_pricing():
         pricing_sheet = sheet.worksheet('Pricing')
         pricing_data = pricing_sheet.get_all_records()
         
-        # Filter pricing data by date range
+        
         filtered_pricing = []
         check_in_date = datetime.strptime(check_in, '%Y-%m-%d')
         check_out_date = datetime.strptime(check_out, '%Y-%m-%d')
         
         for row in pricing_data:
             try:
-                # Try multiple date formats
+                
                 date_str = str(row.get('Date', ''))
                 if not date_str:
                     continue
                     
-                # Handle different date formats
+               
                 try:
                     row_date = datetime.strptime(date_str, '%Y-%m-%d')
                 except ValueError:
@@ -144,7 +144,7 @@ def get_pricing():
                             continue
                 
                 if check_in_date <= row_date < check_out_date:
-                    # Normalize room type for consistency
+                   
                     if 'Room_Type' in row:
                         room_type = row['Room_Type']
                         if room_type and room_type.lower() == 'delux':
@@ -173,7 +173,7 @@ def check_availability():
         check_out = data.get('check_out')
         
         if sheet is None:
-            # Return mock availability data
+            
             return jsonify({
                 'Standard': 5,
                 'Deluxe': 3,
@@ -183,19 +183,19 @@ def check_availability():
         pricing_sheet = sheet.worksheet('Pricing')
         pricing_data = pricing_sheet.get_all_records()
         
-        # Check availability for the date range
+        
         availability = {}
         check_in_date = datetime.strptime(check_in, '%Y-%m-%d')
         check_out_date = datetime.strptime(check_out, '%Y-%m-%d')
         
         for row in pricing_data:
             try:
-                # Try multiple date formats
+               
                 date_str = str(row.get('Date', ''))
                 if not date_str:
                     continue
                     
-                # Handle different date formats
+            
                 try:
                     row_date = datetime.strptime(date_str, '%Y-%m-%d')
                 except ValueError:
@@ -212,9 +212,9 @@ def check_availability():
                     room_type = row.get('Room_Type')
                     available_rooms = row.get('Available_Rooms', 0)
                     
-                    # Normalize room type names to handle variations
+                    
                     if room_type:
-                        # Handle common variations
+                      
                         if room_type.lower() == 'delux':
                             room_type = 'Deluxe'
                         elif room_type.lower() == 'standard':
@@ -232,7 +232,7 @@ def check_availability():
                 print(f"Error processing availability row: {row}, Error: {e}")
                 continue
         
-        # If no availability data found or all rooms are 0, return default values
+       
         if not availability or all(count == 0 for count in availability.values()):
             availability = {'Standard': 5, 'Deluxe': 3, 'Suite': 2}
         
@@ -252,7 +252,7 @@ def calculate_price():
         breakfast = data.get('breakfast', False)
         
         if sheet is None:
-            # Return mock pricing calculation
+           
             check_in_date = datetime.strptime(check_in, '%Y-%m-%d')
             check_out_date = datetime.strptime(check_out, '%Y-%m-%d')
             nights = (check_out_date - check_in_date).days
@@ -287,12 +287,12 @@ def calculate_price():
         
         for row in pricing_data:
             try:
-                # Try multiple date formats
+                
                 date_str = str(row.get('Date', ''))
                 if not date_str:
                     continue
                     
-                # Handle different date formats
+                
                 try:
                     row_date = datetime.strptime(date_str, '%Y-%m-%d')
                 except ValueError:
@@ -308,7 +308,7 @@ def calculate_price():
                 if (check_in_date <= row_date < check_out_date and 
                     row.get('Room_Type') == room_type):
                     
-                    # Base price calculation
+                   
                     if adults == 1:
                         night_price = row.get('Single_Rate', 100)
                     else:
@@ -316,7 +316,6 @@ def calculate_price():
                         if adults > 2:
                             night_price += (adults - 2) * row.get('Extra_Person', 50)
                     
-                    # Add breakfast cost
                     if breakfast:
                         night_price += row.get('With_Breakfast', 25)
                     
@@ -326,7 +325,7 @@ def calculate_price():
                 print(f"Error processing pricing row: {row}, Error: {e}")
                 continue
         
-        # If no pricing data found, use default calculation
+        
         if total_price == 0:
             base_rates = {'Standard': 150, 'Deluxe': 200, 'Suite': 300}
             base_price = base_rates.get(room_type, 150)
@@ -357,11 +356,11 @@ def make_booking():
         data = request.json
         bookings_sheet = sheet.worksheet('Bookings')
         
-        # Generate booking ID
+       
         existing_bookings = bookings_sheet.get_all_records()
         booking_id = len(existing_bookings) + 1
         
-        # Add booking to sheet
+       
         booking_data = [
             booking_id,
             data.get('guest_name'),
